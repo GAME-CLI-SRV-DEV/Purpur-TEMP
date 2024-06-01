@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: granny <granny@purpurmc.org>
+Date: Thu, 16 May 2024 19:11:29 -0700
+Subject: [PATCH] Rebrand
+
+
+diff --git a/src/main/java/io/papermc/paper/ServerBuildInfo.java b/src/main/java/io/papermc/paper/ServerBuildInfo.java
+index ad81341bdd1eb73554cd24f27ac5d655d89db791..fe23268c418cccbd45caf2870f7931cfed978d28 100644
+--- a/src/main/java/io/papermc/paper/ServerBuildInfo.java
++++ b/src/main/java/io/papermc/paper/ServerBuildInfo.java
+@@ -25,6 +25,13 @@ public interface ServerBuildInfo {
+     Key BRAND_PUFFERFISH_ID = Key.key("pufferfishgg", "pufferfish");
+     // Pufferfish end
+ 
++    // Purpur start
++    /**
++     * The brand id for Purpur.
++     */
++    Key BRAND_PURPUR_ID = Key.key("purpurmc", "purpur");
++    // Purpur end
++
+     /**
+      * Gets the {@code ServerBuildInfo}.
+      *

@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Encode42 <me@encode42.dev>
+Date: Mon, 19 Jul 2021 19:28:17 -0400
+Subject: [PATCH] Config to disable Enderman teleport on projectile hit
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/monster/EnderMan.java b/src/main/java/net/minecraft/world/entity/monster/EnderMan.java
+index 4d1a8656e883384c3ce54b9a325071c75b305c83..f42a58845174ba0a80edb039c825a8268f50f4b7 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/EnderMan.java
++++ b/src/main/java/net/minecraft/world/entity/monster/EnderMan.java
+@@ -440,6 +440,7 @@ public class EnderMan extends Monster implements NeutralMob {
+             } else {
+                 flag1 = flag && this.hurtWithCleanWater(source, (ThrownPotion) source.getDirectEntity(), amount);
+ 
++                if (!flag1 && this.level().purpurConfig.endermanIgnoreProjectiles) return super.hurt(source, amount); // Purpur
+                 if (this.tryEscape(com.destroystokyo.paper.event.entity.EndermanEscapeEvent.Reason.INDIRECT)) { // Paper - EndermanEscapeEvent
+                 for (int i = 0; i < 64; ++i) {
+                     if (this.teleport()) {
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+index 4167bfbdd904c851b2f1f5bdd852e3b270db8a27..0f5bb7e220fc4381445e9aaef19882dd4b27987b 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+@@ -1425,6 +1425,7 @@ public class PurpurWorldConfig {
+     public boolean endermanAggroEndermitesOnlyIfPlayerSpawned = false;
+     public boolean endermanIgnorePlayerDragonHead = false;
+     public boolean endermanDisableStareAggro = false;
++    public boolean endermanIgnoreProjectiles = false;
+     private void endermanSettings() {
+         endermanRidable = getBoolean("mobs.enderman.ridable", endermanRidable);
+         endermanRidableInWater = getBoolean("mobs.enderman.ridable-in-water", endermanRidableInWater);
+@@ -1447,6 +1448,7 @@ public class PurpurWorldConfig {
+         endermanAggroEndermitesOnlyIfPlayerSpawned = getBoolean("mobs.enderman.aggressive-towards-endermites-only-spawned-by-player-thrown-ender-pearls", endermanAggroEndermitesOnlyIfPlayerSpawned);
+         endermanIgnorePlayerDragonHead = getBoolean("mobs.enderman.ignore-players-wearing-dragon-head", endermanIgnorePlayerDragonHead);
+         endermanDisableStareAggro = getBoolean("mobs.enderman.disable-player-stare-aggression", endermanDisableStareAggro);
++        endermanIgnoreProjectiles = getBoolean("mobs.enderman.ignore-projectiles", endermanIgnoreProjectiles);
+     }
+ 
+     public boolean endermiteRidable = false;

@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Fourmisain <8464472+Fourmisain@users.noreply.github.com>
+Date: Fri, 5 Mar 2021 17:42:35 -0500
+Subject: [PATCH] One Punch Man!
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 9f294cdfa4808e9bc6cece82984442d48aa40c92..007871611be3a5036c18d5bb0231bd998a9d0cf8 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -2398,6 +2398,21 @@ public abstract class LivingEntity extends Entity implements Attackable {
+                 }
+             }
+ 
++            // Purpur start
++            if (damagesource.getEntity() instanceof net.minecraft.world.entity.player.Player player && damagesource.getEntity().level().purpurConfig.creativeOnePunch) {
++                if (player.isCreative()) {
++                    double attackDamage;
++                    net.minecraft.world.item.component.ItemAttributeModifiers itemattributemodifiers = player.getMainHandItem().getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, net.minecraft.world.item.component.ItemAttributeModifiers.EMPTY);
++
++                    attackDamage = itemattributemodifiers.compute(player.getAttributeBaseValue(Attributes.ATTACK_DAMAGE), EquipmentSlot.MAINHAND);
++
++                    if (attackDamage == 1.0D) {
++                        this.setHealth(0);
++                    }
++                }
++            }
++            // Purpur end
++
+             if (f > 0 || !human) {
+                 if (human) {
+                     // PAIL: Be sure to drag all this code from the EntityHuman subclass each update.
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+index 3a13246c0dccb82ef8168d35d59932911ef2a5ad..b830a673a8c7033147d15d0a63474aa33f5520e6 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+@@ -344,6 +344,7 @@ public class PurpurWorldConfig {
+     public boolean teleportIfOutsideBorder = false;
+     public boolean totemOfUndyingWorksInInventory = false;
+     public boolean playerFixStuckPortal = false;
++    public boolean creativeOnePunch = false;
+     private void playerSettings() {
+         if (PurpurConfig.version < 19) {
+             boolean oldVal = getBoolean("gameplay-mechanics.player.idle-timeout.mods-target", idleTimeoutTargetPlayer);
+@@ -360,6 +361,7 @@ public class PurpurWorldConfig {
+         teleportIfOutsideBorder = getBoolean("gameplay-mechanics.player.teleport-if-outside-border", teleportIfOutsideBorder);
+         totemOfUndyingWorksInInventory = getBoolean("gameplay-mechanics.player.totem-of-undying-works-in-inventory", totemOfUndyingWorksInInventory);
+         playerFixStuckPortal = getBoolean("gameplay-mechanics.player.fix-stuck-in-portal", playerFixStuckPortal);
++        creativeOnePunch = getBoolean("gameplay-mechanics.player.one-punch-in-creative", creativeOnePunch);
+     }
+ 
+     public boolean silkTouchEnabled = false;

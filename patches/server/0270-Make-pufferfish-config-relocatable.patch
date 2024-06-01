@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: BillyGalbreath <blake.galbreath@gmail.com>
+Date: Sun, 12 Jun 2022 09:18:57 -0500
+Subject: [PATCH] Make pufferfish config relocatable
+
+
+diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+index f89623b3b4070c015ffa3abaa23253d5bf40f2f7..cba3d725245223c5d9e8e59dcceec61f0acc1b85 100644
+--- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
++++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+@@ -36,6 +36,7 @@ public class PufferfishConfig {
+ 	
+ 	private static final YamlFile config = new YamlFile();
+ 	private static int updates = 0;
++	public static File pufferfishFile; // Purpur
+ 	
+ 	private static ConfigurationSection convertToBukkit(org.simpleyaml.configuration.ConfigurationSection section) {
+ 		ConfigurationSection newSection = new MemoryConfiguration();
+@@ -58,7 +59,7 @@ public class PufferfishConfig {
+ 	}
+ 	
+ 	public static void load() throws IOException {
+-		File configFile = new File("pufferfish.yml");
++		File configFile = pufferfishFile; // Purpur
+ 		
+ 		if (configFile.exists()) {
+ 			try {
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 3185d37e67649a8ce64af2356d11a8ae6a22a9c4..1b32b9dabcc6d1a6ac800a637d79fc668bab7f7b 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -242,6 +242,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         org.purpurmc.purpur.PurpurConfig.registerCommands();
+         // Purpur end
+         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // Paper - load version history now
++        gg.pufferfish.pufferfish.PufferfishConfig.pufferfishFile = (java.io.File) options.valueOf("pufferfish-settings"); // Purpur
+         gg.pufferfish.pufferfish.PufferfishConfig.load(); // Pufferfish
+         gg.pufferfish.pufferfish.PufferfishCommand.init(); // Pufferfish
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 6d8e9cf4ee496b8748654e792ce438f512c3d946..549d01337e9a89b356287567db101de383d45c9c 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -182,6 +182,12 @@ public class Main {
+                     .ofType(File.class)
+                     .defaultsTo(new File("purpur.yml"))
+                     .describedAs("Yml file");
++
++                acceptsAll(asList("pufferfish", "pufferfish-settings"), "File for pufferfish settings")
++                        .withRequiredArg()
++                        .ofType(File.class)
++                        .defaultsTo(new File("pufferfish.yml"))
++                        .describedAs("Yml file");
+                 // Purpur end
+ 
+                 // Paper start

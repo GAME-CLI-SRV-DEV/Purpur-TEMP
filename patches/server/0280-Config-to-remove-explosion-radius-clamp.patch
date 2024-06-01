@@ -1,0 +1,44 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Nico314159 <nicolino.will@gmail.com>
+Date: Mon, 9 Jan 2023 19:45:55 -0500
+Subject: [PATCH] Config to remove explosion radius clamp
+
+
+diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
+index bd5fcb028d41b60de183b4d849f1ba10746fa0d0..6c2b0b7c59b230ec93717b9f5b136b1d8f2b932b 100644
+--- a/src/main/java/net/minecraft/world/level/Explosion.java
++++ b/src/main/java/net/minecraft/world/level/Explosion.java
+@@ -98,7 +98,7 @@ public class Explosion {
+         this.hitPlayers = Maps.newHashMap();
+         this.level = world;
+         this.source = entity;
+-        this.radius = (float) Math.max(power, 0.0); // CraftBukkit - clamp bad values
++        this.radius = (float) (world == null || world.purpurConfig.explosionClampRadius ? Math.max(power, 0.0) : power); // CraftBukkit - clamp bad values // Purpur
+         this.x = x;
+         this.y = y;
+         this.z = z;
+@@ -426,7 +426,7 @@ public class Explosion {
+ 
+     public void explode() {
+         // CraftBukkit start
+-        if (this.radius < 0.1F) {
++        if ((this.level == null || this.level.purpurConfig.explosionClampRadius) && this.radius < 0.1F) { // Purpur
+             return;
+         }
+         // CraftBukkit end
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+index 293445b8d9c9c984a49308cb52ad2a2a927f1787..b6112d09e7e0d55657b6918bd7fca2499e37a844 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+@@ -221,6 +221,11 @@ public class PurpurWorldConfig {
+         entitySharedRandom = getBoolean("settings.entity.shared-random", entitySharedRandom);
+     }
+ 
++    public boolean explosionClampRadius = true;
++    private void explosionSettings() {
++        explosionClampRadius = getBoolean("gameplay-mechanics.clamp-explosion-radius", explosionClampRadius);
++    }
++
+     public boolean infinityWorksWithoutArrows = false;
+     public boolean infinityWorksWithNormalArrows = true;
+     public boolean infinityWorksWithSpectralArrows = false;

@@ -1,0 +1,61 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ben Kerllenevich <ben@omega24.dev>
+Date: Sun, 21 Mar 2021 15:26:52 -0400
+Subject: [PATCH] Drowning Settings
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 17f9e5568d688d855b7d8910597d24a35ee81134..72de2648f8650fc2c8179a052efa1fbb85cf3d83 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -3466,7 +3466,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+     }
+ 
+     public int getMaxAirSupply() {
+-        return this.maxAirTicks; // CraftBukkit - SPIGOT-6907: re-implement LivingEntity#setMaximumAir()
++        return this.level == null? this.maxAirTicks : this.level().purpurConfig.drowningAirTicks; // CraftBukkit - SPIGOT-6907: re-implement LivingEntity#setMaximumAir() // Purpur
+     }
+ 
+     public int getAirSupply() {
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 32b459a93c372b48163c03601ed408e54989ab9e..8ac0ddccb0a33b23ac8bd4635443f3d92cbbe2f3 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -451,7 +451,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+ 
+                 if (flag1) {
+                     this.setAirSupply(this.decreaseAirSupply(this.getAirSupply()));
+-                    if (this.getAirSupply() == -20) {
++                    if (this.getAirSupply() == -this.level().purpurConfig.drowningDamageInterval) { // Purpur
+                         this.setAirSupply(0);
+                         Vec3 vec3d = this.getDeltaMovement();
+ 
+@@ -463,7 +463,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+                             this.level().addParticle(ParticleTypes.BUBBLE, this.getX() + d2, this.getY() + d3, this.getZ() + d4, vec3d.x, vec3d.y, vec3d.z);
+                         }
+ 
+-                        this.hurt(this.damageSources().drown(), 2.0F);
++                        this.hurt(this.damageSources().drown(), (float) this.level().purpurConfig.damageFromDrowning); // Purpur
+                     }
+                 }
+ 
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+index 11b0c3d1fd51ba145c05800d3b7fc4fa2c92bfaa..6e89c0c10db1c2c0b4bef805359c1461dfd804e0 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
+@@ -164,6 +164,15 @@ public class PurpurWorldConfig {
+         nighttimeTicks = getInt("gameplay-mechanics.daylight-cycle-ticks.nighttime", nighttimeTicks);
+     }
+ 
++    public int drowningAirTicks = 300;
++    public int drowningDamageInterval = 20;
++    public double damageFromDrowning = 2.0F;
++    private void drowningSettings() {
++        drowningAirTicks = getInt("gameplay-mechanics.drowning.air-ticks", drowningAirTicks);
++        drowningDamageInterval = getInt("gameplay-mechanics.drowning.ticks-per-damage", drowningDamageInterval);
++        damageFromDrowning = getDouble("gameplay-mechanics.drowning.damage-from-drowning", damageFromDrowning);
++    }
++
+     public int elytraDamagePerSecond = 1;
+     public double elytraDamageMultiplyBySpeed = 0;
+     public boolean elytraIgnoreUnbreaking = false;

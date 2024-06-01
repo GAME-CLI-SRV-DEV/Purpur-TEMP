@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: BillyGalbreath <blake.galbreath@gmail.com>
+Date: Sun, 3 Jul 2022 04:13:57 -0500
+Subject: [PATCH] Option to disable kick for out of order chat
+
+
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index f3773823154f78bbb4660a3b475abaaab128e35a..88f6759b67d570303cbb82203215175c874b6567 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -1723,7 +1723,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+ 
+         do {
+             if (!iterator.hasNext()) {
+-                return false;
++                return !org.purpurmc.purpur.PurpurConfig.kickForOutOfOrderChat; // Purpur
+             }
+ 
+             voxelshape1 = (VoxelShape) iterator.next();
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+index 16ab5515df8040a060c54b93f17470e7c089f85b..e52aa1c39b643b20350ed58b37d10ffd6329ea9f 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+@@ -456,9 +456,11 @@ public class PurpurConfig {
+ 
+     public static boolean useUPnP = false;
+     public static boolean maxJoinsPerSecond = false;
++    public static boolean kickForOutOfOrderChat = true;
+     private static void networkSettings() {
+         useUPnP = getBoolean("settings.network.upnp-port-forwarding", useUPnP);
+         maxJoinsPerSecond = getBoolean("settings.network.max-joins-per-second", maxJoinsPerSecond);
++        kickForOutOfOrderChat = getBoolean("settings.network.kick-for-out-of-order-chat", kickForOutOfOrderChat);
+     }
+ 
+     public static java.util.regex.Pattern usernameValidCharactersPattern;
